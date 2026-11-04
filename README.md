@@ -139,8 +139,8 @@ npm run dev
 
 Este proyecto fue desarrollado bajo la licencia **MIT** con fines educativos y de demostración durante el Hackathon.
 
-
-Luis Haziel
-Salvador Reyes
-Emiliano Avilés
-Eduardo Castillo
+# Integrantes del Equipo
+- Luis Haziel     [Frontend / UX / Speech API]
+- Salvador Reyes  [Backend / FastAPI / Serverless]
+- Emiliano Avilés [AI Engineer / Clinical Logic]
+- Eduardo Castillo [Product Manager / Pitch & AWS Architecture]
