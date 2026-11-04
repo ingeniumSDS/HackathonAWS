@@ -60,8 +60,38 @@ class ClassificationError(Exception):
     pass
 
 
+DEMO_SCENARIO_TEXT = (
+    "ESCENARIO SINTETICO DEMO: persona ficticia con una molestia leve de tobillo "
+    "tras caminar. Texto inventado para probar la interfaz; no es un caso real "
+    "ni contiene signos vitales."
+)
+
+
+class DemoClassifier:
+    def classify(self, patient: PatientInput) -> object:
+        if patient.sintomas_texto != DEMO_SCENARIO_TEXT:
+            raise HTTPException(
+                status_code=400,
+                detail="El modo demo solo acepta el escenario sintético predefinido",
+            )
+        return {
+            "nivel": 4,
+            "color": "Verde",
+            "prioridad": "DEMO — resultado simulado",
+            "razonamiento": (
+                "Resultado fijo para comprobar la interfaz; no deriva de una evaluación clínica "
+                "y no debe usarse para tomar decisiones."
+            ),
+            "alerta_critica": False,
+        }
+
+
 def get_classifier() -> Classifier | None:
     return None
+
+
+def demo_mode_enabled() -> bool:
+    return os.getenv("QUICKTRIAGE_DEMO_MODE", "").strip().lower() == "true"
 
 
 def get_dynamodb_table() -> DynamoTable:
@@ -86,6 +116,10 @@ def process_triage(
     patient: PatientInput,
     classifier: Classifier | None = Depends(get_classifier),
 ) -> TriageResult:
+    if demo_mode_enabled():
+        result = TriageResult.model_validate(DemoClassifier().classify(patient))
+        return result
+
     if classifier is None:
         raise HTTPException(status_code=503, detail="Clasificador de IA no configurado")
 

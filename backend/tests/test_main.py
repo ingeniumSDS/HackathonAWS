@@ -89,3 +89,42 @@ def test_rejects_inconsistent_esi_response_without_persisting(monkeypatch) -> No
 
     assert response.status_code == 502
     assert table.items == []
+
+
+def test_demo_mode_returns_labeled_synthetic_result_without_persisting(
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("QUICKTRIAGE_DEMO_MODE", "true")
+    monkeypatch.setattr(
+        main,
+        "get_dynamodb_table",
+        lambda: (_ for _ in ()).throw(AssertionError("demo must not persist")),
+    )
+
+    response = TestClient(main.app).post(
+        "/api/triaje",
+        json={"sintomas_texto": main.DEMO_SCENARIO_TEXT},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "nivel": 4,
+        "color": "Verde",
+        "prioridad": "DEMO — resultado simulado",
+        "razonamiento": (
+            "Resultado fijo para comprobar la interfaz; no deriva de una evaluación clínica "
+            "y no debe usarse para tomar decisiones."
+        ),
+        "alerta_critica": False,
+    }
+
+
+def test_demo_mode_rejects_any_non_demo_input(monkeypatch) -> None:
+    monkeypatch.setenv("QUICKTRIAGE_DEMO_MODE", "true")
+
+    response = TestClient(main.app).post(
+        "/api/triaje",
+        json={"sintomas_texto": "un texto arbitrario"},
+    )
+
+    assert response.status_code == 400

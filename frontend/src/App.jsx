@@ -43,6 +43,9 @@ const RESULT_FIELDS = [
   "alerta_critica",
 ];
 
+const DEMO_SCENARIO_TEXT =
+  "ESCENARIO SINTETICO DEMO: persona ficticia con una molestia leve de tobillo tras caminar. Texto inventado para probar la interfaz; no es un caso real ni contiene signos vitales.";
+
 function isTriageResult(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const keys = Object.keys(value).sort();
@@ -77,6 +80,7 @@ export default function App() {
   const [isListening, setIsListening] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [resultIsDemo, setResultIsDemo] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [voiceSupported, setVoiceSupported] = useState(true);
   const recognitionRef = useRef(null);
@@ -159,6 +163,8 @@ export default function App() {
     setLoading(true);
     setErrorMessage("");
     setResult(null);
+    setResultIsDemo(false);
+    const isDemoRequest = symptoms === DEMO_SCENARIO_TEXT;
 
     let responseStatus = 0;
     try {
@@ -179,6 +185,7 @@ export default function App() {
         throw new Error("La respuesta del servicio no cumple el contrato ESI.");
       }
       setResult(body);
+      setResultIsDemo(isDemoRequest);
     } catch (error) {
       setErrorMessage(getErrorMessage(error, responseStatus));
     } finally {
@@ -235,6 +242,26 @@ export default function App() {
               </span>
             </div>
 
+            <div className="mb-4 rounded-xl border border-sky-200 bg-sky-50 p-4">
+              <p className="text-sm font-bold text-sky-950">Prueba rápida de presentación</p>
+              <p className="mt-1 text-sm leading-6 text-sky-900">
+                Carga un escenario completamente ficticio. El resultado estará marcado como
+                simulado y no es una evaluación clínica.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setTranscript(DEMO_SCENARIO_TEXT);
+                  setResult(null);
+                  setErrorMessage("");
+                }}
+                disabled={loading}
+                className="mt-3 min-h-10 rounded-lg border border-sky-300 bg-white px-3 py-2 text-sm font-bold text-sky-950 hover:bg-sky-100 focus:outline-none focus:ring-4 focus:ring-sky-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Cargar escenario simulado
+              </button>
+            </div>
+
             <div className="mb-4 flex flex-wrap items-center gap-3">
               <button
                 type="button"
@@ -271,7 +298,12 @@ export default function App() {
               <textarea
                 id="symptoms"
                 value={transcript}
-                onChange={(event) => setTranscript(event.target.value)}
+                onChange={(event) => {
+                  setTranscript(event.target.value);
+                  setResult(null);
+                  setResultIsDemo(false);
+                  setErrorMessage("");
+                }}
                 placeholder="Ej.: Describe aquí el síntoma principal, cuándo comenzó y cualquier dato relevante…"
                 rows={8}
                 maxLength={5000}
@@ -335,6 +367,11 @@ export default function App() {
                 className={`mt-6 rounded-xl border p-5 ${levelStyle.card}`}
                 aria-live="polite"
               >
+                {resultIsDemo && (
+                  <div className="mb-4 rounded-lg border border-sky-300 bg-sky-100 px-3 py-2 text-sm font-bold text-sky-950">
+                    DEMOSTRACIÓN SIMULADA · NO ES UNA EVALUACIÓN CLÍNICA
+                  </div>
+                )}
                 {result.alerta_critica && (
                   <div className="mb-4 flex items-center gap-2 rounded-lg border border-current/20 bg-white/70 px-3 py-2 text-sm font-bold">
                     <span className={`h-2.5 w-2.5 rounded-full ${levelStyle.marker}`} />
