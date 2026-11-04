@@ -138,3 +138,9 @@ npm run dev
 ## 📄 Licencia
 
 Este proyecto fue desarrollado bajo la licencia **MIT** con fines educativos y de demostración durante el Hackathon.
+
+
+Luis Haziel
+Salvador Reyes
+Emiliano Avilés
+Eduardo Castillo
