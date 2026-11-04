@@ -16,7 +16,8 @@ Crea un componente principal en React (`App.jsx`) utilizando Tailwind CSS para Q
    - Muestra el texto transcrito en tiempo real en un cuadro de texto editable.
 
 3. **Acción de Envío:**
-   - Botón "Evaluar Triaje" que envíe `transcript` mediante `fetch` POST al endpoint `/api/triaje` de FastAPI.
+   - Botón "Evaluar Triaje" que envíe `transcript` como `sintomas_texto` en JSON mediante `fetch` POST al endpoint `/api/triaje` de FastAPI.
+   - Interpreta la respuesta como el objeto ESI con exactamente `nivel`, `color`, `prioridad`, `razonamiento` y `alerta_critica`.
 
 4. **Tarjeta de Resultado Dinámica (ESI):**
    - Muestra el resultado de triaje renderizando colores según la gravedad:

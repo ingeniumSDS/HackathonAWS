@@ -57,6 +57,7 @@ Toda interacción con la IA y respuesta de las APIs DEBE cumplir con la siguient
 2. **CORS:** Incluye middleware `CORSMiddleware` permitiendo orígenes `*` para evitar bloqueos con React/Amplify durante la demo.
 3. **DynamoDB:** Usa `boto3.resource('dynamodb')` apuntando a la tabla `Triajes`. Mapea la clave primaria `triaje_id` como un `uuid.uuid4()`.
 4. **Pydantic Schemas:** Usa modelos de Pydantic para validar los payloads de entrada y salida.
+5. **Fallos de IA:** Si la llamada o la validación de la respuesta falla, devuelve un error HTTP explícito; nunca inventes una clasificación ni registres el fallo como un triaje exitoso.
 
 ---
 
